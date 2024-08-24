@@ -1,7 +1,8 @@
-4<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>STI Attendance System</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -87,12 +88,10 @@
         color: white;
         margin-top: 9px;
         overflow: hidden;
-        font-size: 18px; /* Increased font size */
-        max-width: 530px;
-        height: 60px;
-        line-height: 60px;
+        font-size: 20px; /* Increased font size */
+        max-width: 380px;
         text-align: center;
-        padding: 5px;
+        padding: 1px;
     }
     .names {
         position: -webkit-sticky; /* For Safari */
@@ -102,24 +101,13 @@
         z-index: 1;
         background-color: #fff;
         padding: 5px 0;
-        margin-left: -370px;
-    }
-    
-        .names2 {
-        position: -webkit-sticky; /* For Safari */
-        position: sticky;
-        top: 0;
-        text-align: left;
-        z-index: 1;
-        background-color: #fff;
-        padding: 5px 0;
-        margin-left: -338px;
+        margin-left: -280px;
     }
     
     .login-success {
     font-size: 20px; /* Match the font size of other notifications */
     overflow: hidden;
-    width: 530px;
+    width: 380px;
     height: 50px;
     margin: center;
     vertical-align: middle;
@@ -133,89 +121,104 @@
     <div class="container">
         <img class="LOGOsti" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOtNfvKsNWQOIH-kXGvqazJXNrqRn20PV9DOMIEDfaeOKiPNOayZO581wJ&s=10" alt="STIlogo" />
         <h1 class="">STI Attendance Login</h1><br/>
-        <label class="names" for="microsoftEmail">STI Account Email:</label><br/>
-        <input type="email" id="microsoftEmail" placeholder="Enter your Email"><br/>
-        <label class="names2" for="microsoftPassword">STI Account Password:</label><br/>
-        <input type="password" id="microsoftPassword" placeholder="Enter your Password"><br/>
+        <label class="names" for="username">Username:</label><br/>
+        <input type="text" id="username" placeholder="Enter your username"><br/>
+        <label class="names" for="password">Password:</label><br/>
+        <input type="password" id="password" placeholder="Enter your password"><br/>
+        <input type="checkbox" class="remember-me-input">
+        <label class="remember-me-label" for="remember"> Remember Me</label><br/>
         <button id="loginButton" onclick="login()">Login</button><br/>
+        <button class="forgot-password" onclick="window.location.href = 'forgot-password-page.com';">Forgot Password?</button>
         <div class="notification"></div>
         <div class="login-success"></div>
+
     </div>
+</body>
+<script>
+// Javascript Codes
+localStorage.setItem("testuser", "testpassword");
 
-    <script>
-    // JavaScript Code
-    localStorage.setItem("testuser", "testpassword");
+// Initialize the count of wrong password attempts
+let wrongPasswordAttempts = 0;
 
-    let wrongPasswordAttempts = 0;
-    const maxAttempts = 3;
-    const lockoutTime = 5 * 60 * 1000; // 5 minutes in milliseconds
-    let lockedOut = false;
-    let unlockTimeout;
-    let loginButton = document.getElementById("loginButton");
-    let loginTimer;
+// Maximum allowed wrong password attempts
+const maxAttempts = 3;
+const lockoutTime = 5 * 60 * 1000; // 5 minutes in milliseconds
+let lockedOut = false;
+let unlockTimeout;
 
-    function login() {
-        var microsoftEmail = document.getElementById("microsoftEmail").value;
-        var microsoftPassword = document.getElementById("microsoftPassword").value;
-        var savedPassword = localStorage.getItem("testuser");
-        var notification = document.querySelector(".notification");
+let loginButton = document.getElementById("loginButton");
+let loginTimer;
 
-        if (lockedOut) {
-            notification.textContent = "You are temporarily locked out. Please try again later.";
+function login() {
+    var username = document.getElementById("username").value;
+    var password = document.getElementById("password").value;
+    var savedPassword = localStorage.getItem(username);
+    var notification = document.querySelector(".notification");
+
+    if (lockedOut) {
+        notification.textContent = "You are temporarily locked out. Please try again later.";
+        notification.style.backgroundColor = "orange";
+        notification.style.display = "block";
+        return;
+    }
+
+    if (username === "" || password === "") {
+        notification.textContent = "Please enter both username and password.";
+        notification.style.backgroundColor = "red";
+        notification.style.display = "block";
+        setTimeout(() => {
+            notification.style.display = "none";
+        }, 2000);
+        return;
+    }
+
+    if (savedPassword === password) {
+        // Display a success notification
+        notification.textContent = "Login successful!";
+        notification.style.backgroundColor = "green";
+        notification.style.display = "block";
+        notification.classList.add("login-success"); // Add the class to the notification
+        // Redirect to the attendance form page after successful login
+        setTimeout(() => {
+            window.location.href = "https://Goly67.github.io/Attendance-STI.edu/";
+        }, 1500);
+    } else {
+        wrongPasswordAttempts++;
+        // Display an error notification
+        if (wrongPasswordAttempts === maxAttempts) {
+            notification.textContent = "Exceeded maximum wrong password attempts of 5.";
             notification.style.backgroundColor = "orange";
             notification.style.display = "block";
-            return;
-        }
-
-        if (microsoftEmail === "" || microsoftPassword === "") {
-            notification.textContent = "Please enter both email and password.";
+            lockedOut = true;
+            unlockTimeout = setTimeout(() => {
+                lockedOut = false;
+                notification.textContent = "You can now attempt to login again.";
+                notification.style.backgroundColor = "blue";
+                notification.style.display = "block";
+            }, lockoutTime);
+        } else {
+            notification.textContent = "Incorrect username or password. Please try again.";
             notification.style.backgroundColor = "red";
             notification.style.display = "block";
+            // Clear the input fields
+            document.getElementById("username").value = "";
+            document.getElementById("password").value = "";
+            // Hide the notification after 2 seconds
             setTimeout(() => {
                 notification.style.display = "none";
             }, 2000);
-            return;
+            notification.style.position = 'sticky';
         }
-
-        if (savedPassword === microsoftPassword) {
-            notification.textContent = "Login successful!";
-            notification.style.backgroundColor = "green";
-            notification.style.display = "block";
-            notification.classList.add("login-success");
-            setTimeout(() => {
-                window.location.href = "https://Goly67.github.io/Attendance-STI.edu/";
-            }, 1500);
-        } else {
-            wrongPasswordAttempts++;
-            if (wrongPasswordAttempts === maxAttempts) {
-                notification.textContent = "Exceeded maximum wrong attempts of 3.";
-                notification.style.backgroundColor = "orange";
-                notification.style.display = "block";
-                lockedOut = true;
-                unlockTimeout = setTimeout(() => {
-                    lockedOut = false;
-                    notification.textContent = "You can now attempt to login again.";
-                    notification.style.backgroundColor = "blue";
-                    notification.style.display = "block";
-                }, lockoutTime);
-            } else {
-                notification.textContent = "Incorrect email or password. Please try again.";
-                notification.style.backgroundColor = "red";
-                notification.style.display = "block";
-                document.getElementById("microsoftEmail").value = "";
-                document.getElementById("microsoftPassword").value = "";
-                setTimeout(() => {
-                    notification.style.display = "none";
-                }, 2000);
-                notification.style.position = 'sticky';
-            }
-        }
-
-        loginButton.disabled = true;
-        loginTimer = setTimeout(() => {
-            loginButton.disabled = false;
-        }, 4000);
     }
-    </script>
-</body>
+
+    // Disable the button for 2 seconds
+    loginButton.disabled = true;
+    loginTimer = setTimeout(() => {
+        loginButton.disabled = false;
+    }, 6000);
+    
+    
+}
+</script>
 </html>
