@@ -1,26 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=.6">
-<title>STI Attendance System</title>
+<meta meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <style>
     body {
         font-family: Arial, sans-serif;
         background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFpaTgrm_7qzNvVyfeXdvPAYjXI8kXGqYi4xLaxg9hNWXn57eBTG6K98k&s=10");
         background-repeat: no-repeat;
         background-size: cover;
-        margin: 0 auto;
+        margin: center;
         padding: 20px;
         text-align: center;
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100%;
-        width: 100%;
+        height: 100vh
+        overflow-x: hidden;
     }
     .container {
         max-width: auto;
-        height: 560px;
+        height: 540px;
         padding: 20px;
         background-color: #fff;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -50,6 +49,20 @@
         align-items: center;
         margin-bottom: 12px;
     }
+    .forgot-password {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, 720%);
+        padding: 10px 20px;
+        border-radius: 5px;
+        margin-top: 9px;
+        position: absolute;
+        text-align: center;
+        margin: center;
+        font-size: 17px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
     .remember-me-label {
         display: inline-block;
         margin-top: 10px;
@@ -66,17 +79,18 @@
         margin-top: 16px;
     }
     .notification {
-        background-color: #f0f0f0;
         z-index: 1;
         border-radius: 5px;
         display: none;
         color: white;
         margin-top: 9px;
         overflow: hidden;
-        font-size: 20px; /* Increased font size */
-        max-width: 380px;
+        font-size: 24px; /* Increased font size */
+        max-width: 530px;
+        height: 60px;
+        line-height: 60px;
         text-align: center;
-        padding: 1px;
+        padding: 7px;
     }
     .names {
         position: -webkit-sticky; /* For Safari */
@@ -84,15 +98,26 @@
         top: 0;
         text-align: left;
         z-index: 1;
-        background-color: #fff;
         padding: 5px 0;
-        margin-left: -280px;
+        margin-left: -370px;
+        background: none;
+    }
+    
+        .names2 {
+        position: -webkit-sticky; /* For Safari */
+        position: sticky;
+        top: 0;
+        text-align: left;
+        z-index: 1;
+        background: none;
+        padding: 5px 0;
+        margin-left: -338px;
     }
     
     .login-success {
     font-size: 20px; /* Match the font size of other notifications */
     overflow: hidden;
-    width: 380px;
+    width: 530px;
     height: 50px;
     margin: center;
     vertical-align: middle;
@@ -106,106 +131,90 @@
     <div class="container">
         <img class="LOGOsti" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOtNfvKsNWQOIH-kXGvqazJXNrqRn20PV9DOMIEDfaeOKiPNOayZO581wJ&s=10" alt="STIlogo" />
         <h1 class="">STI Attendance Login</h1><br/>
-        <label class="names" for="username">Username:</label><br/>
-        <input type="text" id="username" placeholder="Enter your username"><br/>
-        <label class="names" for="password">Password:</label><br/>
-        <input type="password" id="password" placeholder="Enter your password"><br/>
-        <input type="checkbox" class="remember-me-input">
-        <label class="remember-me-label" for="remember"> Remember Me</label><br/>
+        <label class="names" for="microsoftEmail">STI Account Email:</label><br/>
+        <input type="email" id="microsoftEmail" placeholder="Enter your Email"><br/>
+        <label class="names2" for="microsoftPassword">STI Account Password:</label><br/>
+        <input type="password" id="microsoftPassword" placeholder="Enter your Password"><br/>
         <button id="loginButton" onclick="login()">Login</button><br/>
         <div class="notification"></div>
         <div class="login-success"></div>
-
     </div>
-</body>
-<script>
-// Javascript Codes
-localStorage.setItem("testuser", "testpassword");
 
-// Initialize the count of wrong password attempts
-let wrongPasswordAttempts = 0;
+    <script>
+    // JavaScript Code
+    localStorage.setItem("testuser", "testpassword");
 
-// Maximum allowed wrong password attempts
-const maxAttempts = 3;
-const lockoutTime = 5 * 60 * 1000; // 5 minutes in milliseconds
-let lockedOut = false;
-let unlockTimeout;
+    let wrongPasswordAttempts = 0;
+    const maxAttempts = 3;
+    const lockoutTime = 5 * 60 * 1000; // 5 minutes in milliseconds
+    let lockedOut = false;
+    let unlockTimeout;
+    let loginButton = document.getElementById("loginButton");
+    let loginTimer;
 
-let loginButton = document.getElementById("loginButton");
-let loginTimer;
+    function login() {
+        var microsoftEmail = document.getElementById("microsoftEmail").value;
+        var microsoftPassword = document.getElementById("microsoftPassword").value;
+        var savedPassword = localStorage.getItem("testuser");
+        var notification = document.querySelector(".notification");
 
-function login() {
-    var username = document.getElementById("username").value;
-    var password = document.getElementById("password").value;
-    var savedPassword = localStorage.getItem(username);
-    var notification = document.querySelector(".notification");
-
-    if (lockedOut) {
-        notification.textContent = "You are temporarily locked out. Please try again later.";
-        notification.style.backgroundColor = "orange";
-        notification.style.display = "block";
-        return;
-    }
-
-    if (username === "" || password === "") {
-        notification.textContent = "Please enter both username and password.";
-        notification.style.backgroundColor = "red";
-        notification.style.display = "block";
-        setTimeout(() => {
-            notification.style.display = "none";
-        }, 2000);
-        return;
-    }
-
-    if (savedPassword === password) {
-        // Display a success notification
-        notification.textContent = "Login successful!";
-        notification.style.backgroundColor = "green";
-        notification.style.display = "block";
-        notification.classList.add("login-success"); // Add the class to the notification
-        // Redirect to the attendance form page after successful login
-        setTimeout(() => {
-            window.location.href = "https://Goly67.github.io/Attendance-STI.edu/";
-        }, 1500);
-    } else {
-        wrongPasswordAttempts++;
-        // Display an error notification
-        if (wrongPasswordAttempts === maxAttempts) {
-            notification.textContent = "Exceeded maximum wrong password attempts of 5.";
+        if (lockedOut) {
+            notification.textContent = "You are temporarily locked out. Please try again later.";
             notification.style.backgroundColor = "orange";
             notification.style.display = "block";
-            lockedOut = true;
-            unlockTimeout = setTimeout(() => {
-                lockedOut = false;
-                notification.textContent = "You can now attempt to login again.";
-                notification.style.backgroundColor = "blue";
-                notification.style.display = "block";
-            }, lockoutTime);
-        } 
-        
-        else {
-            notification.textContent = "Incorrect username or password. Please try again.";
+            return;
+        }
+
+        if (microsoftEmail === "" || microsoftPassword === "") {
+            notification.textContent = "Please enter both email and password.";
             notification.style.backgroundColor = "red";
             notification.style.display = "block";
-            // Clear the input fields
-            document.getElementById("username").value = "";
-            document.getElementById("password").value = "";
-            // Hide the notification after 2 seconds
             setTimeout(() => {
                 notification.style.display = "none";
             }, 2000);
-            notification.style.position = 'sticky';
+            return;
         }
-        
-    }
 
-        // Disable the button for 2 seconds
+        if (savedPassword === microsoftPassword) {
+            notification.textContent = "Login successful!";
+            notification.style.backgroundColor = "green";
+            notification.style.display = "block";
+            notification.classList.add("login-success");
+            setTimeout(() => {
+                window.location.href = "STIAttendanceForm.html";
+            }, 1500);
+        } else {
+            wrongPasswordAttempts++;
+            if (wrongPasswordAttempts === maxAttempts) {
+                notification.textContent = "Exceeded maximum wrong password attempts of 3.";
+                notification.style.backgroundColor = "orange";
+                notification.style.display = "block";
+                lockedOut = true;
+                unlockTimeout = setTimeout(() => {
+                    lockedOut = false;
+                    notification.textContent = "You can now attempt to login again.";
+                    notification.style.backgroundColor = "blue";
+                    notification.style.display = "block";
+                }, lockoutTime);
+            } else {
+                notification.textContent = "Incorrect email or password. Please try again.";
+                notification.style.backgroundColor = "red";
+                notification.style.display = "block";
+                document.getElementById("microsoftEmail").value = "";
+                document.getElementById("microsoftPassword").value = "";
+                setTimeout(() => {
+                    notification.style.display = "none";
+                }, 2000);
+                notification.style.position = 'sticky';
+            }
+        }
+
         loginButton.disabled = true;
         loginTimer = setTimeout(() => {
-        loginButton.disabled = false;
-        }, 3000);
-
-    // Add the following line to prevent the lock from disappearing on page refresh
-        lockedOut = true;
-</script>
+            loginButton.disabled = false;
+        }, 4000);
+        lockedOut = true
+    }
+    </script>
+</body>
 </html>
