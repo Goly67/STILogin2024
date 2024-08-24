@@ -200,11 +200,8 @@ function login() {
         notification.style.display = "block";
         notification.classList.add("login-success");
         setTimeout(() => {
-            localStorage.setItem("isAuthenticated", "true"); // Set authentication status
-        window.location.href = "https://goly67.github.io/Attendance-STI.edu/"; // Redirect to Website 2 after successful login
-        return; // Ensure the function exits after redirecting to prevent further execution
-    } else {
-        // Display error messages or handle incorrect login details
+            window.location.href = "https://goly67.github.io/Attendance-STI.edu/";
+        }, 1500);
     }
     
     } else {
