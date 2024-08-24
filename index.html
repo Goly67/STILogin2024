@@ -181,7 +181,9 @@ function login() {
                 notification.style.backgroundColor = "blue";
                 notification.style.display = "block";
             }, lockoutTime);
-        } else {
+        } 
+        
+        else {
             notification.textContent = "Incorrect username or password. Please try again.";
             notification.style.backgroundColor = "red";
             notification.style.display = "block";
@@ -194,14 +196,17 @@ function login() {
             }, 2000);
             notification.style.position = 'sticky';
         }
+        
     }
 
-    // Disable the button for 2 seconds
-    loginButton.disabled = true;
-    loginTimer = setTimeout(() => {
+        // Disable the button for 2 seconds
+        loginButton.disabled = true;
+        loginTimer = setTimeout(() => {
         loginButton.disabled = false;
-    }, 6000);
-    
+        }, 3000);
+
+    // Add the following line to prevent the lock from disappearing on page refresh
+        lockedOut = true;
     
 }
 </script>
