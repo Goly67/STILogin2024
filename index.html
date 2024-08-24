@@ -87,7 +87,7 @@
         color: white;
         margin-top: 9px;
         overflow: hidden;
-        font-size: 24px; /* Increased font size */
+        font-size: 18px; /* Increased font size */
         max-width: 530px;
         height: 60px;
         line-height: 60px;
@@ -188,7 +188,7 @@
         } else {
             wrongPasswordAttempts++;
             if (wrongPasswordAttempts === maxAttempts) {
-                notification.textContent = "Exceeded maximum wrong password attempts of 3.";
+                notification.textContent = "Exceeded maximum wrong attempts of 3.";
                 notification.style.backgroundColor = "orange";
                 notification.style.display = "block";
                 lockedOut = true;
