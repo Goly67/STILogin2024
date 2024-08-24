@@ -209,10 +209,12 @@
             }
         }
 
-            loginButton.disabled = true;
-            loginTimer = setTimeout(() => {
+        lockedOut = true
+
+        loginButton.disabled = true;
+        loginTimer = setTimeout(() => {
             loginButton.disabled = false;
-            }, 6000);
+        }, 4000);
     }
     </script>
 </body>
