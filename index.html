@@ -201,38 +201,24 @@ function login() {
         // Set a flag in localStorage to indicate successful login
         localStorage.setItem("isLoggedIn", "true");
 
-        // Redirect to the attendance form page after successful login
+        // Redirect to Website 2
         setTimeout(() => {
             window.location.href = "https://goly67.github.io/Attendance-STI.edu/";
         }, 1500);
     } else {
-        wrongPasswordAttempts++;
-
-        // Display an error notification
-        if (wrongPasswordAttempts === maxAttempts) {
-            notification.textContent = "Exceeded maximum wrong password attempts of 5.";
-            notification.style.backgroundColor = "orange";
-            notification.style.display = "block";
-            lockedOut = true;
-            unlockTimeout = setTimeout(() => {
-                lockedOut = false;
-                notification.textContent = "You can now attempt to login again.";
-                notification.style.backgroundColor = "blue";
-                notification.style.display = "block";
-            }, lockoutTime);
-        } else {
-            notification.textContent = "Incorrect username or password. Please try again.";
-            notification.style.backgroundColor = "red";
-            notification.style.display = "block";
-            // Clear the input fields
-            document.getElementById("username").value = "";
-            document.getElementById("password").value = "";
-            // Hide the notification after 2 seconds
-            setTimeout(() => {
-                notification.style.display = "none";
-            }, 2000);
-            notification.style.position = 'sticky';
-        }
+        // Display an error notification for incorrect credentials
+        notification.textContent = "Incorrect username or password. Please try again.";
+        notification.style.backgroundColor = "red";
+        notification.style.display = "block";
+        // Clear the input fields
+        document.getElementById("username").value = "";
+        document.getElementById("password").value = "";
+        // Re-enable the login button
+        document.getElementById("loginButton").disabled = false;
+        // Hide the notification after 2 seconds
+        setTimeout(() => {
+            notification.style.display = "none";
+        }, 2000);
     }
 }
 </script>
