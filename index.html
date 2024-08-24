@@ -135,6 +135,22 @@
 </body>
 <script>
 // Javascript Codes
+document.addEventListener("DOMContentLoaded", function() {
+    const inputs = document.querySelectorAll('input');
+
+    inputs.forEach((input, index) => {
+        input.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                if (index < inputs.length - 1) {
+                    inputs[index + 1].focus(); // Move focus to the next input
+                } else {
+                    inputs[0].focus(); // If at the last input, move focus back to the first input
+                }
+            }
+        });
+    });
+});
+    
 localStorage.setItem("testuser", "testpassword");
 
 // Initialize the count of wrong password attempts
