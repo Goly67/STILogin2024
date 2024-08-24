@@ -213,11 +213,14 @@ function login() {
         // Clear the input fields
         document.getElementById("username").value = "";
         document.getElementById("password").value = "";
+        // Re-enable the login button
+        document.getElementById("loginButton").disabled = false;
         // Hide the notification after 2 seconds
         setTimeout(() => {
             notification.style.display = "none";
         }, 2000);
     }
+}
     
     // Re-enable the login button
     document.getElementById("loginButton").disabled = false;
