@@ -161,12 +161,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 function login() {
-    if (savedPassword === password) {
-        localStorage.setItem("isAuthenticated", "true")
-        window.location.href = "https://goly67.github.io/Attendance-STI.edu";
-    } else {
-    }
-}
 
 localStorage.setItem("testuser", "testpassword");
 
@@ -210,8 +204,13 @@ function login() {
         notification.style.display = "block";
         notification.classList.add("login-success");
         setTimeout(() => {
-            window.location.href = "https://goly67.github.io/Attendance-STI.edu/";
-        }, 1500);
+            localStorage.setItem("isAuthenticated", "true"); // Set authentication status
+        window.location.href = "https://goly67.github.io/Attendance-STI.edu/"; // Redirect to Website 2 after successful login
+        return; // Ensure the function exits after redirecting to prevent further execution
+    } else {
+        // Display error messages or handle incorrect login details
+    }
+    
     } else {
         wrongPasswordAttempts++;
         if (wrongPasswordAttempts === maxAttempts) {
