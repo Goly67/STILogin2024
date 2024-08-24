@@ -174,9 +174,6 @@ function login() {
     var savedPassword = localStorage.getItem(username);
     var notification = document.querySelector(".notification");
 
-    sessionStorage.setItem('loggedIn', 'true');
-    window.location.href = 'Website2URL';
-
     if (lockedOut) {
         notification.textContent = "You are temporarily locked out. Please try again later.";
         notification.style.backgroundColor = "orange";
@@ -196,41 +193,32 @@ function login() {
 
     if (savedPassword === password) {
         // Display a success notification
-       notification.textContent = "Login successful!";
-    notification.style.backgroundColor = "green";
-    notification.style.display = "block";
-    notification.classList.add("login-success");
-    localStorage.setItem("isLoggedIn", "true");
-    setTimeout(() => {
-        window.location.href = "https://goly67.github.io/Attendance-STI.edu/";
-    }, 1500);
-    
-    } else {
-        wrongPasswordAttempts++;
-        if (wrongPasswordAttempts === maxAttempts) {
-            notification.textContent = "Exceeded maximum wrong password attempts of 5.";
-            notification.style.backgroundColor = "orange";
-            notification.style.display = "block";
-            lockedOut = true;
-            unlockTimeout = setTimeout(() => {
-                lockedOut = false;
-                notification.textContent = "You can now attempt to login again.";
-                notification.style.backgroundColor = "blue";
-                notification.style.display = "block";
-            }, lockoutTime);
-        } else {
-            notification.textContent = "Incorrect username or password. Please try again.";
-            notification.style.backgroundColor = "red";
-            notification.style.display = "block";
-            document.getElementById("username").value = "";
-            document.getElementById("password").value = "";
-            setTimeout(() => {
-                notification.style.display = "none";
-            }, 2000);
-            notification.style.position = 'sticky';
-        }
-    }
+        notification.textContent = "Login successful!";
+        notification.style.backgroundColor = "green";
+        notification.style.display = "block";
+        notification.classList.add("login-success");
 
+        // Set a flag in localStorage to indicate successful login
+        localStorage.setItem("isLoggedIn", "true");
+
+        // Redirect to Website 2
+        setTimeout(() => {
+            window.location.href = "https://goly67.github.io/Attendance-STI.edu/";
+        }, 1500);
+    } else {
+        // Display an error notification for incorrect credentials
+        notification.textContent = "Incorrect username or password. Please try again.";
+        notification.style.backgroundColor = "red";
+        notification.style.display = "block";
+        // Clear the input fields
+        document.getElementById("username").value = "";
+        document.getElementById("password").value = "";
+        // Hide the notification after 2 seconds
+        setTimeout(() => {
+            notification.style.display = "none";
+        }, 2000);
+    }
+}
     // Disable the button for 2 seconds
     loginButton.disabled = true;
     loginTimer = setTimeout(() => {
