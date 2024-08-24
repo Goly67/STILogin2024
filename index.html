@@ -209,14 +209,10 @@
             }
         }
 
-            lockedOut = localStorage.getItem("lockedOut") === "true";
-
             loginButton.disabled = true;
             loginTimer = setTimeout(() => {
             loginButton.disabled = false;
             }, 6000);
-
-            localStorage.setItem("lockedOut", lockedOut.toString());
     }
     </script>
 </body>
