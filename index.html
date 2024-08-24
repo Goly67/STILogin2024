@@ -88,13 +88,13 @@
         color: white;
         margin-top: 9px;
         overflow: hidden;
-        font-size: 20px; /* Increased font size */
+        font-size: 20px; 
         max-width: 380px;
         text-align: center;
         padding: 1px;
     }
     .names {
-        position: -webkit-sticky; /* For Safari */
+        position: -webkit-sticky;
         position: sticky;
         top: 0;
         text-align: left;
@@ -105,7 +105,7 @@
     }
     
     .login-success {
-    font-size: 20px; /* Match the font size of other notifications */
+    font-size: 20px;
     overflow: hidden;
     width: 380px;
     height: 50px;
@@ -143,33 +143,37 @@ document.addEventListener("DOMContentLoaded", function() {
     inputs.forEach((input, index) => {
         input.addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
-                event.preventDefault(); // Prevent the default behavior
+                event.preventDefault();
                 if (index < inputs.length - 1) {
-                    inputs[index + 1].focus(); // Move focus to the next input
+                    inputs[index + 1].focus();
                 } else {
-                    button.focus(); // Move focus to the Login button if at the last input
+                    button.focus();
                 }
             }
         });
     });
 
-    // Handle key press event on the button
     button.addEventListener('keypress', function(event) {
         if (event.key === 'Enter') {
-            event.preventDefault(); // Prevent the default behavior
-            login(); // Call the login function when Enter is pressed on the button
+            event.preventDefault();
+            login();
         }
     });
 });
-    
+function login() {
+    if (savedPassword === password) {
+        localStorage.setItem("isAuthenticated", "true")
+        window.location.href = "https://goly67.github.io/Attendance-STI.edu";
+    } else {
+    }
+}
+
 localStorage.setItem("testuser", "testpassword");
 
-// Initialize the count of wrong password attempts
 let wrongPasswordAttempts = 0;
 
-// Maximum allowed wrong password attempts
 const maxAttempts = 3;
-const lockoutTime = 5 * 60 * 1000; // 5 minutes in milliseconds
+const lockoutTime = 5 * 60 * 1000;
 let lockedOut = false;
 let unlockTimeout;
 
@@ -204,14 +208,12 @@ function login() {
         notification.textContent = "Login successful!";
         notification.style.backgroundColor = "green";
         notification.style.display = "block";
-        notification.classList.add("login-success"); // Add the class to the notification
-        // Redirect to the attendance form page after successful login
+        notification.classList.add("login-success");
         setTimeout(() => {
             window.location.href = "https://goly67.github.io/Attendance-STI.edu/";
         }, 1500);
     } else {
         wrongPasswordAttempts++;
-        // Display an error notification
         if (wrongPasswordAttempts === maxAttempts) {
             notification.textContent = "Exceeded maximum wrong password attempts of 5.";
             notification.style.backgroundColor = "orange";
@@ -227,10 +229,8 @@ function login() {
             notification.textContent = "Incorrect username or password. Please try again.";
             notification.style.backgroundColor = "red";
             notification.style.display = "block";
-            // Clear the input fields
             document.getElementById("username").value = "";
             document.getElementById("password").value = "";
-            // Hide the notification after 2 seconds
             setTimeout(() => {
                 notification.style.display = "none";
             }, 2000);
