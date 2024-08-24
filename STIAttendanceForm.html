@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Attendance Form</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFpaTgrm_7qzNvVyfeXdvPAYjXI8kXGqYi4xLaxg9hNWXn57eBTG6K98k&s=10");
+        background-repeat: no-repeat;
+        background-size: cover;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .container {
+        max-width: 400px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    input {
+        width: 95%;
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    button {
+        padding: 10px 20px;
+        background-color: #0078d4;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Attendance Form</h1>
+    <label for="name">Your Name:</label>
+    <input type="text" id="name">
+    <label for="strand">Your Strand:</label>
+    <input type="text" id="strand" placeholder="ICT-101">
+    <label for="date">The date:</label>
+    <input type="date" id="date">
+    <button onclick="openCamera()">Scan QR Code</button>
+</div>
+
+<script>
+    async function openCamera() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+            const video = document.createElement("video");
+            video.srcObject = stream;
+            video.setAttribute("autoplay", "");
+            document.body.appendChild(video);
+
+            const qrScanner = new ZXing.BrowserQRCodeReader();
+            qrScanner.decodeFromVideoDevice(undefined, video, (result) => {
+                if (result) {
+                    alert(`QR Code scanned successfully! Data: ${result.text}`);
+                    // Process the scanned QR code data
+                    // Save the information as needed
+                }
+            });
+        } catch (error) {
+            console.error("Error accessing camera:", error);
+            alert("Error accessing camera. Please check your camera permissions.");
+        }
+    }
+</script>
+<script src="https://unpkg.com/@zxing/library@0.18.6/browser/dist/zxing.min.js"></script>
+</body>
+</html>

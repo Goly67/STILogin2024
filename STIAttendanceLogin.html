@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFpaTgrm_7qzNvVyfeXdvPAYjXI8kXGqYi4xLaxg9hNWXn57eBTG6K98k&s=10");
+        background-repeat: no-repeat;
+        background-size: cover;
+        margin: center;
+        padding: 20px;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh
+        overflow-y: hidden;
+        overflow-x: hidden;
+    }
+    .container {
+        max-width: auto;
+        height: 540px;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    input {
+        width: 95%;
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    button {
+        padding: 10px 159px;
+        background-color: #0078d4;
+        color: white;
+        border: none;
+        border-radius: 29px;
+        cursor: pointer;
+        margin-top: 5%;
+        font-size: 25px;
+    }
+    .LOGOsti {
+        margin: center;
+        padding: 0px;
+        max-width: 140px;
+        border-radius: 50px;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+    .forgot-password {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, 720%);
+        padding: 10px 20px;
+        border-radius: 5px;
+        margin-top: 9px;
+        position: absolute;
+        text-align: center;
+        margin: center;
+        font-size: 17px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .remember-me-label {
+        display: inline-block;
+        margin-top: 10px;
+    }
+    .remember-me-input{
+        width: 19px;
+        height: 19px;
+        padding: 0;
+        margin-left: -225px;
+        vertical-align: bottom;
+        position: relative;
+        top: 5px;
+        overflow: hidden;
+        margin-top: 16px;
+    }
+    .notification {
+        background-color: #f0f0f0;
+        z-index: 1;
+        border-radius: 5px;
+        display: none;
+        color: white;
+        margin-top: 9px;
+        overflow: hidden;
+        font-size: 24px; /* Increased font size */
+        max-width: 530px;
+        height: 60px;
+        line-height: 60px;
+        text-align: center;
+        padding: 10px;
+    }
+    .names {
+        position: -webkit-sticky; /* For Safari */
+        position: sticky;
+        top: 0;
+        text-align: left;
+        z-index: 1;
+        background-color: #fff;
+        padding: 5px 0;
+        margin-left: -370px;
+    }
+    
+        .names2 {
+        position: -webkit-sticky; /* For Safari */
+        position: sticky;
+        top: 0;
+        text-align: left;
+        z-index: 1;
+        background-color: #fff;
+        padding: 5px 0;
+        margin-left: -338px;
+    }
+    
+    .login-success {
+    font-size: 20px; /* Match the font size of other notifications */
+    overflow: hidden;
+    width: 530px;
+    height: 50px;
+    margin: center;
+    vertical-align: middle;
+    text-align: center;
+    line-height: 50px;
+    font-size: 23px;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <img class="LOGOsti" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOtNfvKsNWQOIH-kXGvqazJXNrqRn20PV9DOMIEDfaeOKiPNOayZO581wJ&s=10" alt="STIlogo" />
+        <h1 class="">STI Attendance Login</h1><br/>
+        <label class="names" for="microsoftEmail">STI Account Email:</label><br/>
+        <input type="email" id="microsoftEmail" placeholder="Enter your Email"><br/>
+        <label class="names2" for="microsoftPassword">STI Account Password:</label><br/>
+        <input type="password" id="microsoftPassword" placeholder="Enter your Password"><br/>
+        <button id="loginButton" onclick="login()">Login</button><br/>
+        <div class="notification"></div>
+        <div class="login-success"></div>
+    </div>
+
+    <script>
+    // JavaScript Code
+    localStorage.setItem("testuser", "testpassword");
+
+    let wrongPasswordAttempts = 0;
+    const maxAttempts = 3;
+    const lockoutTime = 5 * 60 * 1000; // 5 minutes in milliseconds
+    let lockedOut = false;
+    let unlockTimeout;
+    let loginButton = document.getElementById("loginButton");
+    let loginTimer;
+
+    function login() {
+        var microsoftEmail = document.getElementById("microsoftEmail").value;
+        var microsoftPassword = document.getElementById("microsoftPassword").value;
+        var savedPassword = localStorage.getItem("testuser");
+        var notification = document.querySelector(".notification");
+
+        if (lockedOut) {
+            notification.textContent = "You are temporarily locked out. Please try again later.";
+            notification.style.backgroundColor = "orange";
+            notification.style.display = "block";
+            return;
+        }
+
+        if (microsoftEmail === "" || microsoftPassword === "") {
+            notification.textContent = "Please enter both email and password.";
+            notification.style.backgroundColor = "red";
+            notification.style.display = "block";
+            setTimeout(() => {
+                notification.style.display = "none";
+            }, 2000);
+            return;
+        }
+
+        if (savedPassword === microsoftPassword) {
+            notification.textContent = "Login successful!";
+            notification.style.backgroundColor = "green";
+            notification.style.display = "block";
+            notification.classList.add("login-success");
+            setTimeout(() => {
+                window.location.href = "STIAttendanceForm.html";
+            }, 1500);
+        } else {
+            wrongPasswordAttempts++;
+            if (wrongPasswordAttempts === maxAttempts) {
+                notification.textContent = "Exceeded maximum wrong password attempts of 3.";
+                notification.style.backgroundColor = "orange";
+                notification.style.display = "block";
+                lockedOut = true;
+                unlockTimeout = setTimeout(() => {
+                    lockedOut = false;
+                    notification.textContent = "You can now attempt to login again.";
+                    notification.style.backgroundColor = "blue";
+                    notification.style.display = "block";
+                }, lockoutTime);
+            } else {
+                notification.textContent = "Incorrect email or password. Please try again.";
+                notification.style.backgroundColor = "red";
+                notification.style.display = "block";
+                document.getElementById("microsoftEmail").value = "";
+                document.getElementById("microsoftPassword").value = "";
+                setTimeout(() => {
+                    notification.style.display = "none";
+                }, 2000);
+                notification.style.position = 'sticky';
+            }
+        }
+
+        loginButton.disabled = true;
+        loginTimer = setTimeout(() => {
+            loginButton.disabled = false;
+        }, 4000);
+    }
+    </script>
+</body>
+</html>
