@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="shortcut icon" type="x-icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOtNfvKsNWQOIH-kXGvqazJXNrqRn20PV9DOMIEDfaeOKiPNOayZO581wJ&s=10"> 
+<link rel="shortcut icon" type="x-icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOtNfvKsNWQOIH-kXGvqazJXNrqRn20PV9DOMIEDfaeOKiPNOayZO581wJ&s=10">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>STI Attendance System</title> 
+<title>STI Attendance System</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -25,9 +25,9 @@
         height: 550px;
         padding: 20px;
         background-color: #fff;
-        margin: 0 auto;
+        border-radius: 20px;
         align-items: center;
-        top: -90%;
+        margin-top: 0px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
     input {
@@ -104,9 +104,9 @@
         text-align: left;
         z-index: 1;
         margin-left: -77%;
-        
+
     }
-    
+
     .login-success {
     font-size: 20px; /* Match the font size of other notifications */
     overflow: hidden;
@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 });
-    
+
 localStorage.setItem("testuser", "testpassword");
 
 // Initialize the count of wrong password attempts
@@ -243,8 +243,8 @@ function login() {
     loginTimer = setTimeout(() => {
         loginButton.disabled = false;
     }, 2000);
-    
-    
+
+
 }
 </script>
 </html>
