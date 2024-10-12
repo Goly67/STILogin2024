@@ -1,249 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="shortcut icon" type="x-icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOtNfvKsNWQOIH-kXGvqazJXNrqRn20PV9DOMIEDfaeOKiPNOayZO581wJ&s=10">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>STI Attendance System</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFpaTgrm_7qzNvVyfeXdvPAYjXI8kXGqYi4xLaxg9hNWXn57eBTG6K98k&s=10");
-        background-repeat: no-repeat;
-        background-size: cover;
-        margin: center;
-        padding: 20px;
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 97vh;
-        position: relative;
-        overflow: hidden;
-          }
-    .container {
-        max-width: auto;
-        height: 550px;
-        padding: 20px;
-        background-color: #fff;
-        border-radius: 20px;
-        align-items: center;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    input {
-        width: 95%;
-        padding: 10px;
-        margin: 5px 0;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
-    button {
-        padding: 10px 143px;
-        background-color: #0078d4;
-        color: white;
-        border: none;
-        border-radius: 29px;
-        cursor: pointer;
-        margin-top: 5%;
-        font-size: 25px;
-    }
-    .LOGOsti {
-        margin: center;
-        padding: 0px;
-        max-width: 140px;
-        border-radius: 50px;
-        align-items: center;
-        margin-bottom: 12px;
-    }
-    .forgot-password {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, 720%);
-        padding: 10px 20px;
-        border-radius: 5px;
-        margin-top: 9px;
-        position: absolute;
-        text-align: center;
-        margin: center;
-        font-size: 17px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .remember-me-label {
-        display: inline-block;
-        margin-top: 10px;
-    }
-    .remember-me-input{
-        width: 19px;
-        height: 19px;
-        padding: 0;
-        margin-left: -220px;
-        vertical-align: bottom;
-        position: relative;
-        top: 5px;
-        overflow: hidden;
-        margin-top: 16px;
-    }
-    .notification {
-        background-color: #f0f0f0;
-        z-index: 1;
-        border-radius: 5px;
-        display: none;
-        color: white;
-        margin-top: 9px;
-        overflow: hidden;
-        font-size: 20px; /* Increased font size */
-        max-width: 380px;
-        text-align: center;
-        padding: 1px;
-    }
-    .names {
-        position: -webkit-sticky; /* For Safari */
-        position: sticky;
-        top: 0;
-        text-align: left;
-        z-index: 1;
-        margin-left: -77%;
-
-    }
-
-    .login-success {
-    font-size: 20px; /* Match the font size of other notifications */
-    overflow: hidden;
-    width: 380px;
-    height: 50px;
-    margin: center;
-    vertical-align: middle;
-    text-align: center;
-    line-height: 50px;
-    font-size: 23px;
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Attendance Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+        }
+        input, select {
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #message {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <img class="LOGOsti" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOtNfvKsNWQOIH-kXGvqazJXNrqRn20PV9DOMIEDfaeOKiPNOayZO581wJ&s=10" alt="STIlogo" />
-        <h1 class="">STI Attendance Login</h1><br/>
-        <label class="names" for="username">Username:</label><br/>
-        <input type="text" id="username" placeholder="Enter your username"><br/>
-        <label class="names" for="password">Password:</label><br/>
-        <input type="password" id="password" placeholder="Enter your password"><br/>
-        <input type="checkbox" class="remember-me-input">
-        <label class="remember-me-label" for="remember"> Remember Me</label><br/>
-        <button id="loginButton" onclick="login()">Login</button><br/>
-        <div class="notification"></div>
-        <div class="login-success"></div>
-
+        <h1>Student Attendance Form</h1>
+        <form id="attendanceForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" required>
+            
+            <label for="studentId">Student ID:</label>
+            <input type="text" id="studentId" required>
+            
+            <label for="strand">Strand:</label>
+            <select id="strand" required>
+                <option value="">Select Strand</option>
+                <option value="STEM">STEM</option>
+                <option value="GAS">GAS</option>
+                <option value="ICT">ICT</option>
+            </select>
+            
+            <label for="event">Event:</label>
+            <input type="text" id="event" required>
+            
+            <button type="submit">Submit Attendance</button>
+        </form>
+        <div id="message"></div>
     </div>
+
+    <script>
+        document.getElementById('attendanceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const studentId = document.getElementById('studentId').value;
+            const strand = document.getElementById('strand').value;
+            const event = document.getElementById('event').value;
+
+            const attendanceData = { 
+                name, 
+                studentId, 
+                strand, 
+                event, 
+                timestamp: new Date().toISOString() 
+            };
+
+            let attendanceList = JSON.parse(localStorage.getItem('attendanceList')) || [];
+            attendanceList.push(attendanceData);
+            localStorage.setItem('attendanceList', JSON.stringify(attendanceList));
+
+            document.getElementById('message').textContent = 'Attendance recorded successfully!';
+            document.getElementById('attendanceForm').reset();
+        });
+    </script>
 </body>
-<script>
-// Javascript Codes
-document.addEventListener("DOMContentLoaded", function() {
-    const inputs = document.querySelectorAll('input');
-    const button = document.getElementById('loginButton');
-
-    document.addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // Prevent the default behavior
-            if (document.activeElement === button) {
-                button.click(); // Trigger button click if focused
-            } else {
-                inputs.forEach((input, index) => {
-                    if (document.activeElement === input) {
-                        if (index < inputs.length - 1) {
-                            inputs[index + 1].focus(); // Move focus to the next input
-                        } else {
-                            inputs[0].focus(); // If at the last input, move focus back to the first input
-                        }
-                    }
-                });
-            }
-        }
-    });
-});
-
-localStorage.setItem("testuser", "testpassword");
-
-// Initialize the count of wrong password attempts
-let wrongPasswordAttempts = 0;
-
-// Maximum allowed wrong password attempts
-const maxAttempts = 3;
-const lockoutTime = 5 * 60 * 1000; // 5 minutes in milliseconds
-let lockedOut = false;
-let unlockTimeout;
-
-let loginButton = document.getElementById("loginButton");
-let loginTimer;
-
-function login() {
-    var username = document.getElementById("username").value;
-    var password = document.getElementById("password").value;
-    var savedPassword = localStorage.getItem(username);
-    var notification = document.querySelector(".notification");
-
-    if (lockedOut) {
-        notification.textContent = "You are temporarily locked out. Please try again later.";
-        notification.style.backgroundColor = "orange";
-        notification.style.display = "block";
-        return;
-    }
-
-    if (username === "" || password === "") {
-        notification.textContent = "Please enter both username and password.";
-        notification.style.backgroundColor = "red";
-        notification.style.display = "block";
-        setTimeout(() => {
-            notification.style.display = "none";
-        }, 2000);
-        return;
-    }
-
-    if (savedPassword === password) {
-        // Display a success notification
-        notification.textContent = "Login successful!";
-        notification.style.backgroundColor = "green";
-        notification.style.display = "block";
-        notification.classList.add("login-success"); // Add the class to the notification
-        // Redirect to the attendance form page after successful login
-        setTimeout(() => {
-            window.location.href = "https://goly67.github.io/Attendance-STI.edu/";
-        }, 1500);
-    } else {
-        wrongPasswordAttempts++;
-        // Display an error notification
-        if (wrongPasswordAttempts === maxAttempts) {
-            notification.textContent = "Exceeded maximum wrong password attempts of 5.";
-            notification.style.backgroundColor = "orange";
-            notification.style.display = "block";
-            lockedOut = true;
-            unlockTimeout = setTimeout(() => {
-                lockedOut = false;
-                notification.textContent = "You can now attempt to login again.";
-                notification.style.backgroundColor = "blue";
-                notification.style.display = "block";
-            }, lockoutTime);
-        } else {
-            notification.textContent = "Incorrect username or password. Please try again.";
-            notification.style.backgroundColor = "red";
-            notification.style.display = "block";
-            // Clear the input fields
-            document.getElementById("username").value = "";
-            document.getElementById("password").value = "";
-            // Hide the notification after 2 seconds
-            setTimeout(() => {
-                notification.style.display = "none";
-            }, 2000);
-            notification.style.position = 'sticky';
-        }
-    }
-
-    // Disable the button for 2 seconds
-    loginButton.disabled = true;
-    loginTimer = setTimeout(() => {
-        loginButton.disabled = false;
-    }, 2000);
-
-
-}
-</script>
 </html>
