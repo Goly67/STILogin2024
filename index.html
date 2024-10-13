@@ -196,7 +196,7 @@
         });
 
         // Form Submission
-        attendanceForm.addEventListener('submit', function(e) {
+         attendanceForm.addEventListener('submit', function(e) {
             e.preventDefault();
             if (!qrScanned) {
                 errorDiv.textContent = 'Please scan the QR code or upload a QR code image before submitting the form.';
@@ -213,18 +213,6 @@
                 checkInTime: timestamp,
                 checkOutTime: null
             };
-            let attendance = JSON.parse(localStorage.getItem('attendance')) || [];
-            attendance.push(attendanceData);
-            localStorage.setItem('attendance', JSON.stringify(attendance));
-
-            document.getElementById('message').textContent = 'Check-in successful!';
-            errorDiv.textContent = '';
-            attendanceForm.reset();
-            submitButton.disabled = true;
-            qrScanned = false;
-            setTimeout(() => {
-                window.location.href = 'checkout.html';
-            }, 2000);
         });
     </script>
 </body>
