@@ -9,10 +9,10 @@
         :root {
             --primary-color: #4a90e2;
             --secondary-color: #f39c12;
-            --background-color: #f5f7fa;
-            --text-color: #333;
-            --card-background: #ffffff;
-            --border-color: #e0e0e0;
+            --background-color: #222; /* Dark background */
+            --text-color: #fff; /* Light text */
+            --card-background: #333; /* Dark card background */
+            --border-color: #555; /* Dark border */
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -34,7 +34,7 @@
         .card {
             background-color: var(--card-background);
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Darker shadow */
             padding: 20px;
             margin-bottom: 20px;
         }
@@ -49,7 +49,7 @@
             max-width: 400px;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Darker shadow */
         }
         #qrCanvas {
             position: absolute;
@@ -71,6 +71,8 @@
             border: 1px solid var(--border-color);
             border-radius: 4px;
             font-size: 16px;
+            background-color: #444; /* Dark input background */
+            color: var(--text-color);
         }
         button {
             background-color: var(--primary-color);
@@ -116,6 +118,7 @@
                 <div id="videoContainer">
                     <video id="video" playsinline></video>
                     <canvas id="qrCanvas"></canvas>
+                    <input type="file" id="qrImageInput" accept="image/*">
                 </div>
                 <form id="attendanceForm">
                     <input type="text" id="name" placeholder="Full Name" required>
@@ -149,6 +152,7 @@
         const attendanceForm = document.getElementById('attendanceForm');
         const submitButton = attendanceForm.querySelector('button[type="submit"]');
         const errorDiv = document.getElementById('error');
+        const qrImageInput = document.getElementById('qrImageInput');
         let qrScanned = false;
 
         navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
@@ -182,6 +186,38 @@
                 requestAnimationFrame(tick);
             }
         }
+
+        qrImageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    qrCanvas.width = img.width;
+                    qrCanvas.height = img.height;
+                    qrContext.drawImage(img, 0, 0);
+                    const imageData = qrContext.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                        inversionAttempts: "dontInvert",
+                    });
+                    if (code) {
+                        console.log("QR Code detected", code.data);
+                        if (code.data === "check-in") {
+                            qrScanned = true;
+                            submitButton.disabled = false;
+                            document.getElementById('message').textContent = 'QR Code scanned successfully. You can now submit the form.';
+                            errorDiv.textContent = '';
+                        }
+                    } else {
+                        errorDiv.textContent = 'Invalid QR Code. Please upload a valid QR code image.';
+                    }
+                };
+                img.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
+        });
 
         function validateStudentId(studentId) {
             return /^02000\d{6}$/.test(studentId);
@@ -229,4 +265,3 @@
     </script>
 </body>
 </html>
-
