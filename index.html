@@ -122,8 +122,8 @@
     <script>
         const API_KEY = '$2a$10$HsWzHALTL5.3.i.nF2XSc.rQ86jGG8P/wZzvb1BpZhs8C0Zo0bjUi'; // Replace with your actual API key
         const BIN_ID = '670b2252e41b4d34e441a85f'; // Replace with your actual bin ID
-        const API_URL = `https://api.jsonbin.io/v3/b/670b2252e41b4d34e441a85f${BIN_ID}`;
-        
+        const API_URL = `https://api.jsonbin.io/v3/b/670b2252e41b4d34e441a85f/${BIN_ID}`;
+
         const video = document.getElementById('video');
         const qrCanvas = document.getElementById('qrCanvas');
         const qrContext = qrCanvas.getContext('2d');
@@ -221,13 +221,33 @@
             attendance.push(attendanceData);
             localStorage.setItem('attendance', JSON.stringify(attendance));
 
+            // Send data to JSONbin.io API
+            fetch(API_URL, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': API_KEY
+                },
+                body: JSON.stringify({ attendance: attendance })
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Attendance data sent successfully!');
+                } else {
+                    console.error('Error sending attendance data:', response.status);
+                }
+            })
+            .catch(error => {
+                console.error('Error sending attendance data:', error);
+            });
+
             document.getElementById('message').textContent = 'Check-in successful!';
             errorDiv.textContent = '';
             attendanceForm.reset();
             submitButton.disabled = true;
             qrScanned = false;
             setTimeout(() => {
-                window.location.href = 'checkout.html';
+                window.location.href = 'https://goly67.github.io/Student-checkout/';
             }, 2000);
         });
     </script>
