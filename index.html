@@ -83,6 +83,9 @@
             font-weight: bold;
             color: #e74c3c;
         }
+        #qrImageInput {
+            margin-top: 10px;
+        }
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
@@ -110,21 +113,27 @@
                 <option value="ICT">ICT</option>
                 <option value="GAS">GAS</option>
             </select>
+            <input type="file" id="qrImageInput" accept="image/*">
             <button type="submit" disabled>Check In</button>
         </form>
     </div>
     <div id="message"></div>
     <div id="error"></div>
-
     <script>
+        const API_KEY = '$2a$10$HsWzHALTL5.3.i.nF2XSc.rQ86jGG8P/wZzvb1BpZhs8C0Zo0bjUi'; // Replace with your actual API key
+        const BIN_ID = '670b2252e41b4d34e441a85f'; // Replace with your actual bin ID
+        const API_URL = `https://api.jsonbin.io/v3/b/670b2252e41b4d34e441a85f${BIN_ID}`;
+        
         const video = document.getElementById('video');
         const qrCanvas = document.getElementById('qrCanvas');
         const qrContext = qrCanvas.getContext('2d');
         const attendanceForm = document.getElementById('attendanceForm');
         const submitButton = attendanceForm.querySelector('button[type="submit"]');
         const errorDiv = document.getElementById('error');
+        const qrImageInput = document.getElementById('qrImageInput');
         let qrScanned = false;
 
+        // Camera Setup
         navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
             .then(function(stream) {
                 video.srcObject = stream;
@@ -133,6 +142,7 @@
                 requestAnimationFrame(tick);
             });
 
+        // QR Code Scanning
         function tick() {
             if (video.readyState === video.HAVE_ENOUGH_DATA) {
                 qrCanvas.height = video.videoHeight;
@@ -157,17 +167,49 @@
             }
         }
 
+        // QR Code Image Upload
+        qrImageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    qrCanvas.height = img.height;
+                    qrCanvas.width = img.width;
+                    qrContext.drawImage(img, 0, 0, qrCanvas.width, qrCanvas.height);
+                    const imageData = qrContext.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                        inversionAttempts: "dontInvert",
+                    });
+                    if (code) {
+                        console.log("QR Code detected from image", code.data);
+                        if (code.data === "check-in") {
+                            qrScanned = true;
+                            submitButton.disabled = false;
+                            document.getElementById('message').textContent = 'QR Code scanned successfully. You can now submit the form.';
+                            errorDiv.textContent = '';
+                        }
+                    } else {
+                        errorDiv.textContent = 'Invalid QR Code image.';
+                    }
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Form Submission
         attendanceForm.addEventListener('submit', function(e) {
             e.preventDefault();
             if (!qrScanned) {
-                errorDiv.textContent = 'Please scan the QR code before submitting the form.';
+                errorDiv.textContent = 'Please scan the QR code or upload a QR code image before submitting the form.';
                 return;
             }
             const name = document.getElementById('name').value;
             const studentId = document.getElementById('studentId').value;
             const strand = document.getElementById('strand').value;
             const timestamp = new Date().toISOString();
-
             const attendanceData = {
                 name,
                 studentId,
@@ -175,14 +217,15 @@
                 checkInTime: timestamp,
                 checkOutTime: null
             };
-
             let attendance = JSON.parse(localStorage.getItem('attendance')) || [];
             attendance.push(attendanceData);
             localStorage.setItem('attendance', JSON.stringify(attendance));
 
             document.getElementById('message').textContent = 'Check-in successful!';
             errorDiv.textContent = '';
-            
+            attendanceForm.reset();
+            submitButton.disabled = true;
+            qrScanned = false;
             setTimeout(() => {
                 window.location.href = 'checkout.html';
             }, 2000);
