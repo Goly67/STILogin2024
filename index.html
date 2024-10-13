@@ -222,14 +222,23 @@
             localStorage.setItem('attendance', JSON.stringify(attendance));
 
             // Send data to JSONbin.io API
-            fetch(API_URL, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Master-Key': API_KEY
-                },
-                body: JSON.stringify({ attendance: attendance })
-            })
+            // ... form submission code ...
+
+const attendanceData = {
+    "attendance": [
+        { "name": "John Doe", "present": true },
+        { "name": "Jane Smith", "present": false }
+    ]
+};
+
+fetch(API_URL, {
+    method: 'POST', // Or 'PUT' if you're updating existing data
+    headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': API_KEY
+    },
+    body: JSON.stringify(attendanceData) // Send the attendance data as JSON
+})
             .then(response => {
                 if (response.ok) {
                     console.log('Attendance data sent successfully!');
