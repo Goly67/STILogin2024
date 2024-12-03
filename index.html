@@ -220,39 +220,58 @@
         function validateStudentId(studentId) {
             return /^02000\d{6}$/.test(studentId);
         }
-        attendanceForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            if (!qrScanned) {
-                errorDiv.textContent = 'Please scan the QR code before submitting the form.';
-                return;
-            }
-            const name = document.getElementById('name').value;
-            const enteredId = document.getElementById('studentId').value;
-            const studentId = "02000" + enteredId.padStart(6, '0');
-            const strand = document.getElementById('strand').value;
-            const level = document.getElementById('level').value;
-            if (!validateStudentId(studentId)) {
-                errorDiv.textContent = 'Invalid Student ID format. Please enter the last 6 digits of your ID.';
-                return;
-            }
-            const timestamp = new Date().toISOString();
-            const attendanceData = {
-                name,
-                studentId,
-                strand,
-                level,
-                checkInTime: timestamp,
-                checkOutTime: null
-            };
-            let attendance = JSON.parse(localStorage.getItem('attendance')) || [];
-            attendance.push(attendanceData);
-            localStorage.setItem('attendance', JSON.stringify(attendance));
+        
+        attendanceForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    if (!qrScanned) {
+        errorDiv.textContent = 'Please scan the QR code before submitting the form.';
+        return;
+    }
+
+    const name = document.getElementById('name').value;
+    const enteredId = document.getElementById('studentId').value;
+    const studentId = "02000" + enteredId.padStart(6, '0');
+    const strand = document.getElementById('strand').value;
+    const level = document.getElementById('level').value;
+
+    if (!validateStudentId(studentId)) {
+        errorDiv.textContent = 'Invalid Student ID format. Please enter the last 6 digits of your ID.';
+        return;
+    }
+
+    const timestamp = new Date().toISOString();
+    const attendanceData = {
+        name,
+        studentId,
+        strand,
+        level,
+        checkInTime: timestamp,
+        checkOutTime: null
+    };
+
+    try {
+        const response = await fetch('https://sti-attendance-api.glitch.me/attendance', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(attendanceData)
+        });
+
+        if (response.ok) {
             document.getElementById('message').textContent = 'Check-in successful! Redirecting to check-out page...';
             errorDiv.textContent = '';
             setTimeout(() => {
                 window.location.href = 'https://goly67.github.io/Student-checkout/';
             }, 2000);
-        });
+        } else {
+            throw new Error('Failed to check in.');
+        }
+    } catch (error) {
+        errorDiv.textContent = `Error: ${error.message}`;
+    }
+});
         document.getElementById('studentId').addEventListener('input', function(e) {
             if (this.value.length > 6) {
                 this.value = this.value.slice(0, 6);
