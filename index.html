@@ -158,36 +158,43 @@
         const errorDiv = document.getElementById('error');
         const qrImageInput = document.getElementById('qrImageInput');
         let qrScanned = false;
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-            .then(function(stream) {
-                video.srcObject = stream;
-                video.setAttribute("playsinline", true);
-                video.play();
-                requestAnimationFrame(tick);
-            });
-        function tick() {
-            if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                qrCanvas.height = video.videoHeight;
-                qrCanvas.width = video.videoWidth;
-                qrContext.drawImage(video, 0, 0, qrCanvas.width, qrCanvas.height);
-                var imageData = qrContext.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
-                var code = jsQR(imageData.data, imageData.width, imageData.height, {
-                    inversionAttempts: "dontInvert",
-                });
-                if (code) {
-                    console.log("QR Code detected", code.data);
-                    if (code.data === "check-in") {
-                        qrScanned = true;
-                        submitButton.disabled = false;
-                        document.getElementById('message').textContent = 'QR Code scanned successfully. You can now submit the form.';
-                        errorDiv.textContent = '';
-                    }
-                }
-            }
-            if (!qrScanned) {
-                requestAnimationFrame(tick);
+let stream; // Declare stream outside to access it later
+
+navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+    .then(function (userStream) {
+        stream = userStream; // Save the stream reference
+        video.srcObject = stream;
+        video.setAttribute("playsinline", true);
+        video.play();
+        requestAnimationFrame(tick);
+    });
+
+function tick() {
+    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        qrCanvas.height = video.videoHeight;
+        qrCanvas.width = video.videoWidth;
+        qrContext.drawImage(video, 0, 0, qrCanvas.width, qrCanvas.height);
+        var imageData = qrContext.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
+        var code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: "dontInvert",
+        });
+        if (code) {
+            console.log("QR Code detected", code.data);
+            if (code.data === "check-in") {
+                qrScanned = true;
+                submitButton.disabled = false;
+                document.getElementById('message').textContent = 'QR Code scanned successfully. You can now submit the form.';
+                errorDiv.textContent = '';
+                
+                // Stop the camera once QR code is scanned
+                stream.getTracks().forEach(track => track.stop()); // Stop camera
             }
         }
+    }
+    if (!qrScanned) {
+        requestAnimationFrame(tick);
+    }
+}
         qrImageInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             const reader = new FileReader();
@@ -277,6 +284,21 @@
                 this.value = this.value.slice(0, 6);
             }
         });
+
+        document.addEventListener('fullscreenchange', function () {
+    if (document.fullscreenElement) {
+        // In fullscreen mode
+        alert("Please do not take screenshots.");
+    }
+});
+
+document.addEventListener('webkitfullscreenchange', function () {
+    if (document.webkitFullscreenElement) {
+        // In fullscreen mode
+        alert("Please do not take screenshots.");
+    }
+});
+
     </script>
 </body>
 </html>
