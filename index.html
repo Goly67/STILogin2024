@@ -174,11 +174,13 @@
                 const imageData = qrContext.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
                 const code = jsQR(imageData.data, imageData.width, imageData.height);
                 if (code && !qrScanned) {
-                    qrScanned = true;
-                    submitButton.disabled = false;
-                    document.getElementById('message').textContent = 'QR Code scanned successfully!';
-                    stopCamera();
-                }
+    qrScanned = true;
+    submitButton.disabled = false;
+    document.getElementById('message').textContent = 'QR Code scanned successfully!';
+    document.getElementById('videoContainer').style.display = 'none'; // Hide video container
+    stopCamera();
+}
+
             }
             if (!qrScanned) requestAnimationFrame(scanQRCode);
         }
@@ -186,10 +188,10 @@
         function stopCamera() {
     if (stream) {
         stream.getTracks().forEach(track => track.stop());
-        video.srcObject = null;
+        video.srcObject = null; // Detach the stream
     }
-    // Hide the camera container after stopping the camera
-    document.getElementById('videoContainer').style.display = 'none';
+    video.style.display = 'none'; // Hide the video element
+    qrCanvas.style.display = 'none'; // Optionally hide the canvas too
 }
 
 
