@@ -153,48 +153,43 @@
         const video = document.getElementById('video');
         const qrCanvas = document.getElementById('qrCanvas');
         const qrContext = qrCanvas.getContext('2d');
-        const attendanceForm = document.getElementById('attendanceForm');
-        const submitButton = attendanceForm.querySelector('button[type="submit"]');
-        const errorDiv = document.getElementById('error');
+        const submitButton = document.querySelector('button[type="submit"]');
         const qrImageInput = document.getElementById('qrImageInput');
         let qrScanned = false;
-let stream; // Declare stream outside to access it later
+        let stream;
 
-navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-    .then(function (userStream) {
-        stream = userStream; // Save the stream reference
-        video.srcObject = stream;
-        video.setAttribute("playsinline", true);
-        video.play();
-        requestAnimationFrame(tick);
-    });
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+            .then(function (userStream) {
+                stream = userStream;
+                video.srcObject = stream;
+                video.play();
+                requestAnimationFrame(scanQRCode);
+            });
 
-function tick() {
-    if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        qrCanvas.height = video.videoHeight;
-        qrCanvas.width = video.videoWidth;
-        qrContext.drawImage(video, 0, 0, qrCanvas.width, qrCanvas.height);
-        var imageData = qrContext.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
-        var code = jsQR(imageData.data, imageData.width, imageData.height, {
-            inversionAttempts: "dontInvert",
-        });
-        if (code) {
-            console.log("QR Code detected", code.data);
-            if (code.data === "check-in") {
-                qrScanned = true;
-                submitButton.disabled = false;
-                document.getElementById('message').textContent = 'QR Code scanned successfully. You can now submit the form.';
-                errorDiv.textContent = '';
-                
-                // Stop the camera once QR code is scanned
-                stream.getTracks().forEach(track => track.stop()); // Stop camera
+        function scanQRCode() {
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                qrCanvas.height = video.videoHeight;
+                qrCanvas.width = video.videoWidth;
+                qrContext.drawImage(video, 0, 0, qrCanvas.width, qrCanvas.height);
+                const imageData = qrContext.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+                if (code && !qrScanned) {
+                    qrScanned = true;
+                    submitButton.disabled = false;
+                    document.getElementById('message').textContent = 'QR Code scanned successfully!';
+                    stopCamera();
+                }
+            }
+            if (!qrScanned) requestAnimationFrame(scanQRCode);
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
             }
         }
-    }
-    if (!qrScanned) {
-        requestAnimationFrame(tick);
-    }
-}
+
         qrImageInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             const reader = new FileReader();
@@ -205,19 +200,11 @@ function tick() {
                     qrCanvas.height = img.height;
                     qrContext.drawImage(img, 0, 0);
                     const imageData = qrContext.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
-                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
-                        inversionAttempts: "dontInvert",
-                    });
+                    const code = jsQR(imageData.data, imageData.width, imageData.height);
                     if (code) {
-                        console.log("QR Code detected", code.data);
-                        if (code.data === "check-in") {
-                            qrScanned = true;
-                            submitButton.disabled = false;
-                            document.getElementById('message').textContent = 'QR Code scanned successfully. You can now submit the form.';
-                            errorDiv.textContent = '';
-                        }
-                    } else {
-                        errorDiv.textContent = 'Invalid QR Code. Please upload a valid QR code image.';
+                        qrScanned = true;
+                        submitButton.disabled = false;
+                        document.getElementById('message').textContent = 'QR Code scanned successfully!';
                     }
                 };
                 img.src = e.target.result;
