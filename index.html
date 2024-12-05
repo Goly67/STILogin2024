@@ -153,51 +153,48 @@
         const video = document.getElementById('video');
         const qrCanvas = document.getElementById('qrCanvas');
         const qrContext = qrCanvas.getContext('2d');
-        const submitButton = document.querySelector('button[type="submit"]');
+        const attendanceForm = document.getElementById('attendanceForm');
+        const submitButton = attendanceForm.querySelector('button[type="submit"]');
+        const errorDiv = document.getElementById('error');
         const qrImageInput = document.getElementById('qrImageInput');
         let qrScanned = false;
-        let stream;
+let stream; // Declare stream outside to access it later
 
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-            .then(function (userStream) {
-                stream = userStream;
-                video.srcObject = stream;
-                video.play();
-                requestAnimationFrame(scanQRCode);
-            });
+navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+    .then(function (userStream) {
+        stream = userStream; // Save the stream reference
+        video.srcObject = stream;
+        video.setAttribute("playsinline", true);
+        video.play();
+        requestAnimationFrame(tick);
+    });
 
-        function scanQRCode() {
+function tick() {
     if (video.readyState === video.HAVE_ENOUGH_DATA) {
         qrCanvas.height = video.videoHeight;
         qrCanvas.width = video.videoWidth;
         qrContext.drawImage(video, 0, 0, qrCanvas.width, qrCanvas.height);
-
-        const imageData = qrContext.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
-        const code = jsQR(imageData.data, imageData.width, imageData.height);
-
-        if (code && !qrScanned) {
-            qrScanned = true; // Mark scanning as done
-            submitButton.disabled = false; // Enable submit button
-            document.getElementById('message').textContent = 'QR Code scanned successfully!';
-
-            // Hide video container and stop the camera
-            document.getElementById('videoContainer').style.display = 'none'; 
-            stopCamera(); // Call stopCamera to properly stop the stream
+        var imageData = qrContext.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
+        var code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: "dontInvert",
+        });
+        if (code) {
+            console.log("QR Code detected", code.data);
+            if (code.data === "check-in") {
+                qrScanned = true;
+                submitButton.disabled = false;
+                document.getElementById('message').textContent = 'QR Code scanned successfully. You can now submit the form.';
+                errorDiv.textContent = '';
+                
+                // Stop the camera once QR code is scanned
+                stream.getTracks().forEach(track => track.stop()); // Stop camera
+            }
         }
     }
-            if (!qrScanned) requestAnimationFrame(scanQRCode);
-        }
-
-        function stopCamera() {
-    if (stream) {
-        stream.getTracks().forEach(track => track.stop()); // Stop all tracks
-        stream = null; // Clear the stream reference
+    if (!qrScanned) {
+        requestAnimationFrame(tick);
     }
-    video.style.display = 'none'; // Hide the video element
-    qrCanvas.style.display = 'none'; // Hide the canvas element
 }
-
-
         qrImageInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             const reader = new FileReader();
@@ -208,11 +205,19 @@
                     qrCanvas.height = img.height;
                     qrContext.drawImage(img, 0, 0);
                     const imageData = qrContext.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
-                    const code = jsQR(imageData.data, imageData.width, imageData.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                        inversionAttempts: "dontInvert",
+                    });
                     if (code) {
-                        qrScanned = true;
-                        submitButton.disabled = false;
-                        document.getElementById('message').textContent = 'QR Code scanned successfully!';
+                        console.log("QR Code detected", code.data);
+                        if (code.data === "check-in") {
+                            qrScanned = true;
+                            submitButton.disabled = false;
+                            document.getElementById('message').textContent = 'QR Code scanned successfully. You can now submit the form.';
+                            errorDiv.textContent = '';
+                        }
+                    } else {
+                        errorDiv.textContent = 'Invalid QR Code. Please upload a valid QR code image.';
                     }
                 };
                 img.src = e.target.result;
@@ -253,34 +258,26 @@
     };
 
     try {
-    const response = await fetch('https://sti-attendance-api.glitch.me/attendance', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(attendanceData)
-    });
+        const response = await fetch('https://sti-attendance-api.glitch.me/attendance', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(attendanceData)
+        });
 
-    // Define errorDiv as an existing DOM element
-    const errorDiv = document.getElementById('error-message');
-
-    if (response.ok) {
-        document.getElementById('message').textContent = 'Check-in successful! Redirecting to check-out page...';
-        errorDiv.textContent = ''; // Clear any previous error messages
-        setTimeout(() => {
-            window.location.href = 'https://goly67.github.io/Student-checkout/';
-        }, 2000);
-    } else {
-        throw new Error('Failed to check in.');
-    }
-} catch (error) {
-    const errorDiv = document.getElementById('error-message'); // Ensure errorDiv is defined
-    if (errorDiv) {
+        if (response.ok) {
+            document.getElementById('message').textContent = 'Check-in successful! Redirecting to check-out page...';
+            errorDiv.textContent = '';
+            setTimeout(() => {
+                window.location.href = 'https://goly67.github.io/Student-checkout/';
+            }, 2000);
+        } else {
+            throw new Error('Failed to check in.');
+        }
+    } catch (error) {
         errorDiv.textContent = `Error: ${error.message}`;
-    } else {
-        console.error(`Error: ${error.message}`); // Log the error if errorDiv does not exist
     }
-}
 });
         document.getElementById('studentId').addEventListener('input', function(e) {
             if (this.value.length > 6) {
