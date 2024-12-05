@@ -167,31 +167,34 @@
             });
 
         function scanQRCode() {
-            if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                qrCanvas.height = video.videoHeight;
-                qrCanvas.width = video.videoWidth;
-                qrContext.drawImage(video, 0, 0, qrCanvas.width, qrCanvas.height);
-                const imageData = qrContext.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
-                const code = jsQR(imageData.data, imageData.width, imageData.height);
-                if (code && !qrScanned) {
-    qrScanned = true;
-    submitButton.disabled = false;
-    document.getElementById('message').textContent = 'QR Code scanned successfully!';
-    document.getElementById('videoContainer').style.display = 'none'; // Hide video container
-    stopCamera();
-}
+    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        qrCanvas.height = video.videoHeight;
+        qrCanvas.width = video.videoWidth;
+        qrContext.drawImage(video, 0, 0, qrCanvas.width, qrCanvas.height);
 
-            }
+        const imageData = qrContext.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+        if (code && !qrScanned) {
+            qrScanned = true; // Mark scanning as done
+            submitButton.disabled = false; // Enable submit button
+            document.getElementById('message').textContent = 'QR Code scanned successfully!';
+
+            // Hide video container and stop the camera
+            document.getElementById('videoContainer').style.display = 'none'; 
+            stopCamera(); // Call stopCamera to properly stop the stream
+        }
+    }
             if (!qrScanned) requestAnimationFrame(scanQRCode);
         }
 
         function stopCamera() {
     if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-        video.srcObject = null; // Detach the stream
+        stream.getTracks().forEach(track => track.stop()); // Stop all tracks
+        stream = null; // Clear the stream reference
     }
     video.style.display = 'none'; // Hide the video element
-    qrCanvas.style.display = 'none'; // Optionally hide the canvas too
+    qrCanvas.style.display = 'none'; // Hide the canvas element
 }
 
 
