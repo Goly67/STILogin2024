@@ -184,11 +184,14 @@
         }
 
         function stopCamera() {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                video.srcObject = null;
-            }
-        }
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        video.srcObject = null;
+    }
+    // Hide the camera container after stopping the camera
+    document.getElementById('videoContainer').style.display = 'none';
+}
+
 
         qrImageInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
