@@ -184,6 +184,9 @@ function tick() {
         if (code) {
             console.log("QR Code detected", code.data);
 
+            // If QR code has already been scanned, prevent further scanning
+            if (qrScanned) return;
+
             // Check if it is a check-in QR code and hasn't been scanned already
             if (code.data.startsWith("check-in-") && !scannedCheckInCode) {
                 scannedCheckInCode = true; // Mark it as scanned
@@ -197,15 +200,6 @@ function tick() {
             } else if (code.data.startsWith("check-in-") && scannedCheckInCode) {
                 errorDiv.textContent = 'This check-in QR code has already been scanned. Please try again with a valid code.';
             }
-
-            // Optionally handle check-out QR code as well (no randomness)
-            if (code.data === "check-out-123456789") {
-                qrScanned = true;
-                submitButton.disabled = false;
-                document.getElementById('message').textContent = 'Check-out QR Code scanned. You can now submit the form.';
-                errorDiv.textContent = '';
-                stream.getTracks().forEach(track => track.stop()); // Stop camera
-            }
         }
     }
 
@@ -213,7 +207,6 @@ function tick() {
         requestAnimationFrame(tick);
     }
 }
-
 qrImageInput.addEventListener('change', (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
