@@ -192,7 +192,7 @@ function tick() {
                 document.getElementById('message').textContent = 'QR Code scanned successfully. You can now submit the form.';
                 errorDiv.textContent = '';
 
-                // Stop the camera once QR code is scanned
+                // Stop the camera once QR code is scanned to avoid further scanning
                 stream.getTracks().forEach(track => track.stop()); // Stop camera
             } else if (code.data.startsWith("check-in-") && scannedCheckInCode) {
                 errorDiv.textContent = 'This check-in QR code has already been scanned. Please try again with a valid code.';
@@ -333,7 +333,6 @@ document.addEventListener('webkitfullscreenchange', function () {
         alert("Please do not take screenshots.");
     }
 });
-
 
     </script>
 </body>
