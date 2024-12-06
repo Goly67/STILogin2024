@@ -228,7 +228,7 @@ qrImageInput.addEventListener('change', (event) => {
 
 function validateStudentId(studentId) {
     // Validate if the student ID starts with 02000 followed by exactly 6 digits
-    return /^02000\d{6}$/.test(studentId);
+    return /^02000\d{11}$/.test(studentId);
 }
 
 attendanceForm.addEventListener('submit', async function (e) {
@@ -284,8 +284,8 @@ attendanceForm.addEventListener('submit', async function (e) {
 });
 
 document.getElementById('studentId').addEventListener('input', function(e) {
-    if (this.value.length > 6) {
-        this.value = this.value.slice(0, 6); // Limit the student ID to the last 6 digits if needed
+    if (this.value.length > 11) {
+        this.value = this.value.slice(0, 11); // Limit the student ID to the last 6 digits if needed
     }
 });
 
