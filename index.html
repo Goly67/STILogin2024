@@ -172,7 +172,7 @@ navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
     });
 
 function tick() {
-    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+    if (video.readyState === video.HAVE_ENOUGH_DATA && !qrScanned) {
         qrCanvas.height = video.videoHeight;
         qrCanvas.width = video.videoWidth;
         qrContext.drawImage(video, 0, 0, qrCanvas.width, qrCanvas.height);
@@ -210,7 +210,9 @@ function tick() {
 
 // Function to stop the QR scanner
 function stopScanner() {
-    stream.getTracks().forEach(track => track.stop()); // Stop camera
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop()); // Stop camera
+    }
     qrScanned = true; // Prevent further scanning attempts
 }
 
@@ -336,7 +338,6 @@ document.addEventListener('webkitfullscreenchange', function () {
         alert("Please do not take screenshots.");
     }
 });
-
     </script>
 </body>
 </html>
