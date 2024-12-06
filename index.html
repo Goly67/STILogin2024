@@ -158,7 +158,8 @@
         const errorDiv = document.getElementById('error');
         const qrImageInput = document.getElementById('qrImageInput');
         let qrScanned = false;
-let stream; // Declare stream outside to access it later
+        let stream; // Declare stream outside to access it later
+        let cooldown = false; // Cooldown flag
 
 navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
     .then(function (userStream) {
@@ -228,8 +229,13 @@ function tick() {
             return /^02000\d{6}$/.test(studentId);
         }
         
-        attendanceForm.addEventListener('submit', async function (e) {
+attendanceForm.addEventListener('submit', async function (e) {
     e.preventDefault();
+
+    if (cooldown) {
+        errorDiv.textContent = 'Please wait 6 seconds before submitting again.';
+        return;
+    }
 
     if (!qrScanned) {
         errorDiv.textContent = 'Please scan the QR code before submitting the form.';
@@ -237,13 +243,12 @@ function tick() {
     }
 
     const name = document.getElementById('name').value;
-    const enteredId = document.getElementById('studentId').value;
-    const studentId = "02000" + enteredId.padStart(6, '0');
+    const studentId = document.getElementById('studentId').value;
     const strand = document.getElementById('strand').value;
     const level = document.getElementById('level').value;
 
     if (!validateStudentId(studentId)) {
-        errorDiv.textContent = 'Invalid Student ID format. Please enter the last 6 digits of your ID.';
+        errorDiv.textContent = 'Invalid Student ID format. Please enter the full ID including 02000 and 6 digits.';
         return;
     }
 
@@ -258,6 +263,8 @@ function tick() {
     };
 
     try {
+        submitButton.disabled = true;
+
         const response = await fetch('https://sti-attendance-api.glitch.me/attendance', {
             method: 'POST',
             headers: {
@@ -278,6 +285,12 @@ function tick() {
     } catch (error) {
         errorDiv.textContent = `Error: ${error.message}`;
     }
+
+    cooldown = true;
+    setTimeout(() => {
+        cooldown = false;
+        submitButton.disabled = false;
+    }, 6000);
 });
         
         document.getElementById('studentId').addEventListener('input', function(e) {
