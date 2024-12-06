@@ -159,6 +159,7 @@ const errorDiv = document.getElementById('error');
 const qrImageInput = document.getElementById('qrImageInput');
 let qrScanned = false;
 let stream; // Declare stream outside to access it later
+let cooldown = false; // Cooldown flag
 
 navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
     .then(function (userStream) {
@@ -234,6 +235,12 @@ function validateStudentId(studentId) {
 attendanceForm.addEventListener('submit', async function (e) {
     e.preventDefault();
 
+    // Check cooldown status
+    if (cooldown) {
+        errorDiv.textContent = 'Please wait 6 seconds before submitting again.';
+        return;
+    }
+
     if (!qrScanned) {
         errorDiv.textContent = 'Please scan the QR code before submitting the form.';
         return;
@@ -281,6 +288,14 @@ attendanceForm.addEventListener('submit', async function (e) {
     } catch (error) {
         errorDiv.textContent = `Error: ${error.message}`;
     }
+
+    // Start cooldown after submitting
+    cooldown = true;
+    submitButton.disabled = true;
+    setTimeout(() => {
+        cooldown = false;
+        submitButton.disabled = false;
+    }, 6000); // 6 seconds cooldown
 });
 
 document.getElementById('studentId').addEventListener('input', function(e) {
@@ -302,6 +317,7 @@ document.addEventListener('webkitfullscreenchange', function () {
         alert("Please do not take screenshots.");
     }
 });
+
 
     </script>
 </body>
