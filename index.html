@@ -268,6 +268,9 @@ attendanceForm.addEventListener('submit', async function (e) {
     };
 
     try {
+        // Disable the submit button to prevent multiple clicks
+        submitButton.disabled = true;
+
         const response = await fetch('https://sti-attendance-api.glitch.me/attendance', {
             method: 'POST',
             headers: {
@@ -291,10 +294,9 @@ attendanceForm.addEventListener('submit', async function (e) {
 
     // Start cooldown after submitting
     cooldown = true;
-    submitButton.disabled = true;
     setTimeout(() => {
         cooldown = false;
-        submitButton.disabled = false;
+        submitButton.disabled = false; // Enable the button after cooldown
     }, 6000); // 6 seconds cooldown
 });
 
@@ -317,7 +319,6 @@ document.addEventListener('webkitfullscreenchange', function () {
         alert("Please do not take screenshots.");
     }
 });
-
 
     </script>
 </body>
