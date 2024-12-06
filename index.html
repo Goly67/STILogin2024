@@ -195,8 +195,8 @@ function tick() {
                 document.getElementById('message').textContent = 'QR Code scanned successfully. You can now submit the form.';
                 errorDiv.textContent = '';
 
-                // Stop the camera once QR code is scanned to avoid further scanning
-                stream.getTracks().forEach(track => track.stop()); // Stop camera
+                // Stop the camera and scanning process once QR code is scanned
+                stopScanner();
             } else if (code.data.startsWith("check-in-") && scannedCheckInCode) {
                 errorDiv.textContent = 'This check-in QR code has already been scanned. Please try again with a valid code.';
             }
@@ -207,6 +207,13 @@ function tick() {
         requestAnimationFrame(tick);
     }
 }
+
+// Function to stop the QR scanner
+function stopScanner() {
+    stream.getTracks().forEach(track => track.stop()); // Stop camera
+    qrScanned = true; // Prevent further scanning attempts
+}
+
 qrImageInput.addEventListener('change', (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
@@ -229,6 +236,9 @@ qrImageInput.addEventListener('change', (event) => {
                     submitButton.disabled = false;
                     document.getElementById('message').textContent = 'QR Code scanned successfully. You can now submit the form.';
                     errorDiv.textContent = '';
+
+                    // Stop the scanner
+                    stopScanner();
                 } else if (code.data.startsWith("check-in-") && scannedCheckInCode) {
                     errorDiv.textContent = 'This check-in QR code has already been scanned. Please try again with a valid code.';
                 }
